@@ -1,0 +1,348 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage{graphicx,textcomp}
+\usepackage{natbib}
+\usepackage{setspace}
+\usepackage{fullpage}
+\usepackage{color}
+\usepackage[reqno]{amsmath}
+\usepackage{amsthm}
+\usepackage{fancyvrb}
+\usepackage{amssymb,enumerate}
+\usepackage[all]{xy}
+\usepackage{endnotes}
+\usepackage{lscape}
+\newtheorem{com}{Comment}
+\usepackage{float}
+\usepackage{hyperref}
+\newtheorem{lem} {Lemma}
+\newtheorem{prop}{Proposition}
+\newtheorem{thm}{Theorem}
+\newtheorem{defn}{Definition}
+\newtheorem{cor}{Corollary}
+\newtheorem{obs}{Observation}
+\usepackage[compact]{titlesec}
+\usepackage{dcolumn}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usepackage{multirow}
+\usepackage{xcolor}
+\newcolumntype{.}{D{.}{.}{-1}}
+\newcolumntype{d}[1]{D{.}{.}{#1}}
+\definecolor{light-gray}{gray}{0.65}
+\usepackage{url}
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},   
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{magenta},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	basicstyle=\footnotesize,
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=b,                    
+	keepspaces=true,                 
+	numbers=left,                    
+	numbersep=5pt,                  
+	showspaces=false,                
+	showstringspaces=false,
+	showtabs=false,                  
+	tabsize=2
+}
+\lstset{style=mystyle}
+\newcommand{\Sref}[1]{Section~\ref{#1}}
+\newtheorem{hyp}{Hypothesis}
+
+\title{Problem Set 1}
+\date{Due: October 1, 2023}
+\author{Applied Stats/Quant Methods 1}
+
+\begin{document}
+	\maketitle
+	
+	\section*{Instructions}
+	\begin{itemize}
+	\item Please show your work! You may lose points by simply writing in the answer. If the problem requires you to execute commands in \texttt{R}, please include the code you used to get your answers. Please also include the \texttt{.R} file that contains your code. If you are not sure if work needs to be shown for a particular problem, please ask.
+\item Your homework should be submitted electronically on GitHub.
+\item This problem set is due before 23:59 on Sunday October 1, 2023. No late assignments will be accepted.
+\item Total available points for this homework is 80.
+	\end{itemize}
+	
+	\vspace{1cm}
+	\section*{Question 1 (40 points): Education}
+
+A school counselor was curious about the average of IQ of the students in her school and took a random sample of 25 students' IQ scores. The following is the data set:\\
+\vspace{.5cm}
+
+\lstinputlisting[language=R, firstline=36, lastline=36]{PS01.R} 
+
+\vspace{1cm}
+
+\begin{enumerate}
+	\item Find a 90\% confidence interval for the average student IQ in the school.\\
+
+\begin{lstlisting}[language=R] 
+y <- c(105, 69, 86, 100, 82, 111, 104, 110, 87, 108, 87, 90, 94, 113, 112, 98, 80, 97, 95, 111, 114, 89, 95, 126, 98)
+
+confidence_level <- 0.90
+
+y_size <- length(y)
+y_mean <- mean(y)
+y_sd <- sd(y)
+
+degrees_of_freedom <- length(y) - 1
+t_critical <- qt((1 - confidence_level) / 2, df = degrees_of_freedom)
+lower_Confidence <- y_mean - (t_critical * (y_sd / sqrt(y_size)) )
+upper_Confidence <- y_mean + (t_critical * (y_sd / sqrt(y_size)) )
+
+cat("Confidence Interval : [", lower_Confidence, ", " , upper_Confidence, "]\n")
+\end{lstlisting} 
+
+\noindent Confidence Interval (90\%): [ 102.9201 ,  93.95993 ]
+
+\item Next, the school counselor was curious  whether  the average student IQ in her school is higher than the average IQ score (100) among all the schools in the country.\\ 
+
+
+	\noindent Using the same sample, conduct the appropriate hypothesis test with $\alpha=0.05$.
+\end{enumerate}
+\begin{lstlisting}[language=R] 
+y <- c(105, 69, 86, 100, 82, 111, 104, 110, 87, 108, 87, 90, 94, 113, 112, 98, 80, 97, 95, 111, 114, 89, 95, 126, 98)
+alpha <- 0.05
+mu<-100
+t_statistic <- (mean(y) - mu) / (sd(y) / sqrt(length(y)))
+p_value <- 2 * pt(abs(t_statistic), degrees_of_freedom, lower.tail = FALSE)
+t_test_IQ <- t.test(y, mu = 100)  
+\end{lstlisting} 
+
+\noindent p value: 0.557, which is greater than alpha= 0.05; 
+so no enough evidence to reject the null hypothesis; In other words no sufficient evidence to prove the IQ score of random 25 students in the school was higher than the average IQ score among all the schools in the country. \\
+\vspace{.5cm}
+
+\newpage
+
+\section*{Question 2 (40 points): Political Economy}
+
+\noindent Researchers are curious about what affects the amount of money communities spend on addressing homelessness. The following variables constitute our data set about social welfare expenditures in the USA. \\
+\vspace{.5cm}
+
+
+\begin{tabular}{r|l}
+	\texttt{State} &\emph{50 states in US} \\
+	\texttt{Y} & \emph{per capita expenditure on shelters/housing assistance in state}\\
+	\texttt{X1} &\emph{per capita personal income in state} \\
+	\texttt{X2} &  \emph{Number of residents per 100,000 that are "financially insecure" in state}\\
+	\texttt{X3} &  \emph{Number of people per thousand residing in urban areas in state} \\
+	\texttt{Region} &  \emph{1=Northeast, 2= North Central, 3= South, 4=West} \\
+\end{tabular}
+
+\vspace{.5cm}
+\noindent Explore the \texttt{expenditure} data set and import data into \texttt{R}.
+\vspace{.5cm}
+\lstinputlisting[language=R, firstline=54, lastline=54]{PS01.R}  
+\vspace{.5cm}
+\begin{itemize}
+
+\item
+Please plot the relationships among \emph{Y}, \emph{X1}, \emph{X2}, and \emph{X3}? What are the correlations among them (you just need to describe the graph and the relationships among them)?
+\begin{lstlisting}[language=R]
+install.packages("tidyverse") 
+library(tidyverse) 
+expenditure <- read.table("https://raw.githubusercontent.com/ASDS-TCD/StatsI_Fall2023/main/datasets/expenditure.txt", header=T)
+relationship_expenditure <- expenditure[, c("Y", "X1", "X2", "X3")]
+par(mfrow = c(1, 3))  
+plot(relationship_expenditure$X1, relationship_expenditure$Y, main = "Y vs. X1", xlab = "X1", ylab = "Y", col = "yellow")
+lm_model <- lm(Y ~ X1, data = relationship_expenditure)
+abline(lm_model, col = "blue")
+\end{lstlisting}
+plot1 : scatterplot with linner regression \emph{Y},\emph{X1}
+\begin{figure}[htp]
+    \centering
+    \includegraphics[width=6cm]{probelmset1 plots/Y_X1 plot.jpeg}
+    \caption{Y vs X1 }
+    \label{Y_X1 plot}
+\end{figure}
+
+\begin{lstlisting}[language=R]
+plot(relationship_expenditure$X2, relationship_expenditure$Y, main = "Y vs. X2", xlab = "X2", ylab = "Y", col = "pink")
+lm_model<- lm(Y~X2, data = relationship_expenditure)
+abline(lm_model,col="black")
+\end{lstlisting}
+
+plot2 : scatterplot with linner regression \emph{Y},\emph{X2}
+
+\begin{figure}[htp]
+    \centering
+    \includegraphics[width=6cm]{probelmset1 plots/Y_X2 plot.jpeg}
+    \caption{Y vs X2 }
+    \label{Y_X2 plot}
+\end{figure}
+
+\begin{lstlisting}[language=R]
+plot(relationship_expenditure$X3, relationship_expenditure$Y, main = "Y vs. X3", xlab = "X3", ylab = "Y", col = "blue")
+lm_model<- lm(Y~X3, data = relationship_expenditure)
+abline(lm_model,col="black")
+\end{lstlisting}
+plot3 : scatterplot with linner regression \emph{Y},\emph{X3}
+\begin{figure}[htp]
+    \centering
+    \includegraphics[width=6cm]{probelmset1 plots/Y_X3 plot.jpeg}
+    \caption{Y vs X3 }
+    \label{Y_X3 plot}
+\end{figure}
+
+\newpage
+\begin{lstlisting}[language=R]
+plot(relationship_expenditure$X1, relationship_expenditure$X2, main = "X1 vs. X2", xlab = "X1", ylab = "X2", col = "blue")
+lm_model<- lm(X1~X2, data = relationship_expenditure)
+abline(lm_model,col="black")
+\end{lstlisting}
+
+plot4 : scatterplot with linner regression \emph{X1},\emph{X2}
+\begin{figure}[htp]
+    \centering
+    \includegraphics[width=6cm]{probelmset1 plots/X1_X2 plot.jpeg}
+    \caption{X1 vs X2 }
+    \label{X1_X2 plot}
+\end{figure}
+\begin{lstlisting}[language=R]
+plot(relationship_expenditure$X1, relationship_expenditure$X3, main = "X1 vs. X3", xlab = "X1", ylab = "X3", col = "green")
+lm_model<- lm(X1~X3, data = relationship_expenditure)
+abline(lm_model,col="black")
+\end{lstlisting}
+
+plot5 : scatterplot with linner regression \emph{X1},\emph{X3}
+\begin{figure}[htp]
+    \centering
+    \includegraphics[width=6cm]{probelmset1 plots/X1_X3 plot.jpeg}
+    \caption{X1 vs X3 }
+    \label{X1_X3 plot}
+\end{figure}
+\newpage
+\begin{lstlisting}[language=R]
+plot(relationship_expenditure$X2, relationship_expenditure$X3, main = "X2 vs. X3", xlab = "X2", ylab = "X3", col = "orange")
+lm_model<- lm(X2~X3, data = relationship_expenditure)
+abline(lm_model,col="black")
+\end{lstlisting}
+
+plot6 : scatterplot with linner regression \emph{X2},\emph{X3}
+\begin{figure}[htp]
+    \centering
+    \includegraphics[width=6cm]{probelmset1 plots/X2_X3 plot.jpeg}
+    \caption{X2 vs X3 }
+    \label{X2_X3 plot}
+\end{figure}
+
+\begin{lstlisting}[language=R]
+pairs(relationship_expenditure[, c("Y", "X1", "X2", "X3")], col = c("blue", "red", "green", "purple"))
+\end{lstlisting}
+plot7 : Matrix scatterplots  \emph{Y},\emph{X1} to\emph{X3}
+\begin{figure}[htp]
+    \centering
+    \includegraphics[width=6cm]{probelmset1 plots/matrix_Y_X3.jpeg}
+    \caption{Y vs X1-X3 }
+    \label{Matrix plot}
+\end{figure}
+
+\newpage
+\begin{lstlisting}[language=R]
+ggplot(expenditure, aes(x = X1)) +
+  geom_line(aes(y = Y, color = "Y vs. X1")) +
+  geom_line(aes(x = X2, y = Y, color = "Y vs. X2")) +
+  geom_line(aes(x = X3, y = Y, color = "Y vs. X3")) +
+  labs(title = "plot of Y, X1, X2, and X3", x = "X1_X2_X3", y = "Y_expenditures") +
+  theme_minimal()
+\end{lstlisting}
+
+plot8 : line plot  \emph{Y},\emph{X1} to\emph{X3}
+\begin{figure}[htp]
+    \centering
+    \includegraphics[width=6cm]{probelmset1 plots/line_Y_X1_X3.jpeg}
+    \caption{Y vs X1-X3 }
+    \label{line plot}
+\end{figure}
+
+\section*{Description:}
+ we can see\\
+plot1: Y and X1 are two variables with positive relationship\\
+plot2: Y and X2 are two  variables with positive relationship\\
+plot3: Y and X3 are two variables with positive relationship\\
+plot4: X1 and X2 are two variables , null relationship between them \\
+plot5: X1 and X3 are two  variables , null relationship between them \\
+plot6: X2 and X3 are two  variables , null relationship between them \\
+
+From plot7 and plot 8: independent variable X1: per capital personal income make more obvious positive  effect on  dependant variable Y: per capital expenditure on shelters. 
+\newpage
+
+
+\vspace{.5cm}
+\item
+Please plot the relationship between \emph{Y} and \emph{Region}? On average, which region has the highest per capita expenditure on housing assistance?
+\vspace{.5cm}
+\begin{lstlisting}[language=R]
+install.packages("ggplot2")
+library("ggplot2")
+
+expenditure <- read.table("https://raw.githubusercontent.com/ASDS-TCD/StatsI_Fall2023/main/datasets/expenditure.txt", header=T)
+
+expenditure$Region <- as.factor(expenditure$Region)
+library("ggplot2")
+
+ggplot(expenditure, aes(x=Y, fill=Region))+ geom_histogram(binwidth = 6, position = "dodge")+labs(title = "histogram Y by region", x="expenditures on shelter", y="regions") + theme_minimal()
+
+ggplot(expenditure,aes(x=factor(Region), y=Y, fill=factor(Region)))+ geom_bar(stat = "identity")+labs(title = "bar chart Y by region", X="region", y="expenditures")+ theme_minimal()\end{lstlisting}
+
+bar chart  : bar chart \emph{Y},\emph{Region}
+\begin{figure}[htp]
+    \centering
+    \includegraphics[width=6cm]{probelmset1 plots/bar_Y_region.jpeg}
+    \caption{Y vs region }
+    \label{bar chart region}
+\end{figure}
+histogram: histogram \emph{Y},\emph{Region}
+\begin{figure}[htp]
+    \centering
+    \includegraphics[width=6cm]{probelmset1 plots/hist_Y_region.jpeg}
+    \caption{Y vs region }
+    \label{histogram region}
+\end{figure}
+\newpage
+\section*{Description:}
+although region 4(west) has the highest per capita expenditures on shelters on the bar chart, region 2(North central) has the most times of expenditure between 75-95
+
+\vspace{.5cm}
+\item
+Please plot the relationship between \emph{Y} and \emph{X1}? Describe this graph and the relationship. Reproduce the above graph including one more variable \emph{Region} and display different regions with different types of symbols and colors.
+\end{itemize}
+
+\begin{lstlisting}[language=R]
+ggplot(expenditure, aes(x=X1, y=Y))+ geom_line()+labs(title = "line Y by X1", x="person income", y="expenditures on shelter")+theme_minimal()
+
+ggplot(expenditure,aes(x=X1, y=Y, color= Region))+geom_line()+geom_point(aes(shape= Region), size=6) + labs(title = "line Y by X1&Region", x="person income", y="expenditures on shelter") + theme_minimal()+scale_shape_manual(values = c("1"=0, "2"=1,"3"=2,"4"=5))
+\end{lstlisting}
+
+line chart  : line chart \emph{Y},\emph{X1}
+\begin{figure}[htp]
+    \centering
+    \includegraphics[width=6cm]{probelmset1 plots/line_Y_X1.jpeg}
+    \caption{Y vs X1 }
+    \label{line chart Y vs X1}
+\end{figure}
+\newpage
+line chart  : line chart \emph{Y},\emph{X1 with Region}
+\begin{figure}[htp]
+    \centering
+    \includegraphics[width=6cm]{probelmset1 plots/line_Y_X1_Region.jpeg}
+    \caption{Y vs X1 with Region }
+    \label{line chart Y vs X1 with Region}
+\end{figure}
+\section*{Description:}
+Previously, we found that there is positive relationship between Y and X1; From the second line chart, X1(personal income) with different regions make diverse impact on expenditures on shelters; people live in region 4 who make income around 2500 willing to make the highest contribution on house assistance.
+
+\end{document}
