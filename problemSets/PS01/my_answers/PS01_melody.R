@@ -57,7 +57,7 @@ p_value <- 2 * pt(abs(t_statistic), degrees_of_freedom, lower.tail = FALSE)
 t_test_IQ <- t.test(y, mu = 100)  
 
 
-# p_value: 0.557, which is  greater than 𝓪= 0.05; so no enough evidence to reject the null hypothesis; In another word no sufficient evident to prove the IQ score of randon 25 students in the school higher than the average IQ score among all the school in the country.  .
+# p_value: 0.72, which is  greater than 𝓪= 0.05; so no enough evidence to reject the null hypothesis; In another word no sufficient evident to prove the IQ score of randon 25 students in the school higher than the average IQ score among all the school in the country.  .
 
 #####################
 # Problem 2
