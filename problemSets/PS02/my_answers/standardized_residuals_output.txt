@@ -1,0 +1,3 @@
+            not stopped bribe request stopped/warning
+upper class   0.1360828    -0.8153742        0.818923
+lower class  -0.1825742     1.0939393       -1.098701
