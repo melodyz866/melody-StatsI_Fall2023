@@ -33,3 +33,21 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 # read in data
 inc.sub <- read.csv("https://raw.githubusercontent.com/ASDS-TCD/StatsI_Fall2023/main/datasets/incumbents_subset.csv")
 
+# run regression  outcome variable : voteshare / the explanatory variable : difflog
+
+model <- lm(voteshare ~ difflog, data = inc.sub)
+
+# scatter plot with regression line
+
+plot(inc.sub$difflog, inc.sub$voteshare, main = "Scatter Plot 1  with Regression Line", 
+     xlab = "difflog", ylab = "voteshare")
+abline(lm(voteshare ~ difflog, data = inc.sub), col = "pink")
+
+# save the residuals of the model
+summary(model)
+residuals <- residuals(model)
+
+residuals_summary <- capture.output(summary(model$residuals))
+writeLines(residuals_summary, "residuals_summary.txt")
+getwd()
+

@@ -1,0 +1,315 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage{graphicx,textcomp}
+\usepackage{natbib}
+\usepackage{setspace}
+\usepackage{fullpage}
+\usepackage{color}
+\usepackage[reqno]{amsmath}
+\usepackage{amsthm}
+\usepackage{fancyvrb}
+\usepackage{amssymb,enumerate}
+\usepackage[all]{xy}
+\usepackage{endnotes}
+\usepackage{lscape}
+\newtheorem{com}{Comment}
+\usepackage{float}
+\usepackage{hyperref}
+\newtheorem{lem} {Lemma}
+\newtheorem{prop}{Proposition}
+\newtheorem{thm}{Theorem}
+\newtheorem{defn}{Definition}
+\newtheorem{cor}{Corollary}
+\newtheorem{obs}{Observation}
+\usepackage[compact]{titlesec}
+\usepackage{dcolumn}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usepackage{multirow}
+\usepackage{xcolor}
+\newcolumntype{.}{D{.}{.}{-1}}
+\newcolumntype{d}[1]{D{.}{.}{#1}}
+\definecolor{light-gray}{gray}{0.65}
+\usepackage{url}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{verbatim}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},   
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{magenta},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	basicstyle=\footnotesize,
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=b,                    
+	keepspaces=true,                 
+	numbers=left,                    
+	numbersep=5pt,                  
+	showspaces=false,                
+	showstringspaces=false,
+	showtabs=false,                  
+	tabsize=2
+}
+\lstset{style=mystyle}
+\newcommand{\Sref}[1]{Section~\ref{#1}}
+\newtheorem{hyp}{Hypothesis}
+
+\title{Problem Set 3}
+\date{Due: November 19, 2022}
+\author{Applied Stats/Quant Methods 1}
+
+
+\begin{document}
+	\maketitle
+	\section*{Instructions}
+	\begin{itemize}
+		\item Please show your work! You may lose points by simply writing in the answer. If the problem requires you to execute commands in \texttt{R}, please include the code you used to get your answers. Please also include the \texttt{.R} file that contains your code. If you are not sure if work needs to be shown for a particular problem, please ask.
+	\item Your homework should be submitted electronically on GitHub.
+	\item This problem set is due before 23:59 on Sunday November 19, 2023. No late assignments will be accepted.
+
+	\end{itemize}
+
+		\vspace{.25cm}
+	
+\noindent In this problem set, you will run several regressions and create an add variable plot (see the lecture slides) in \texttt{R} using the \texttt{incumbents\_subset.csv} dataset. Include all of your code.
+
+	\vspace{.5cm}
+\section*{Question 1}
+\vspace{.25cm}
+\noindent We are interested in knowing how the difference in campaign spending between incumbent and challenger affects the incumbent's vote share. 
+
+\newpage
+	\begin{enumerate}
+		\item Run a regression where the outcome variable is \texttt{voteshare} and the explanatory variable is \texttt{difflog}.
+  
+\noindent let's use the lm() function in R  to run a simple linear regression. In question 1: the dependent variable (outcome) is voteshare and the independent variable (explanatory) is difflog; Then, use the summary() function to see the regression results. The code  and result showed as below: 
+
+  \begin{lstlisting}[language=R] 
+model1 <- lm(voteshare ~ difflog, data = inc.sub)
+summary(model)
+ \end{lstlisting} 
+\verbatiminput{regression1_summary.txt}
+
+\noindent In summary: The coefficient for difflog is 0.041666 and it is positive, There is a positive relationship between difflog and voteshare. As difflog increases, voteshare is expected to increase. The p-value associated with the F-statistic: 2.2 $\times 10^{-16}$,  
+which is close to zero, so the linear regression model is statistically significant.  The increase of the difference in campaign spending between incumbents will result in an increase of the  challenger the incumbent’s vote share.
+
+\newpage
+\item Make a scatterplot of the two variables and add the regression line. 	
+
+Create a scatter plot with a regression line using the plot() first:  with difflog on the x-axis and voteshare on the y-axis.  and  then add  pink color line by : abline() functions , code in R and plot shows below:
+
+ \includegraphics[width=8cm]{scatter plot 1.jpeg} 
+The scatter plot1  of Voteshare vs. Difflog shows a positive linear relationship between the two variables. As Difflog increases, Voteshare tends to increase, there is a tight cluster of points around the major regression line. 
+
+\begin{lstlisting}[language=R] 
+plot(inc.sub$difflog, inc.sub$voteshare, main = "Scatter Plot 1  with Regression Line", 
+     xlab = "difflog", ylab = "voteshare")
+abline(lm(voteshare ~ difflog, data = inc.sub), col = "pink")
+
+\end{lstlisting} 
+  
+
+		\item Save the residuals of the model in a separate object.	
+
+\begin{lstlisting}[language=R] 
+residuals1 <- residuals(model1)
+\end{lstlisting} 
+Save residuals from regression model to a vector in R
+
+\item Write the prediction equation.
+
+\vspace{0.5cm}
+voteshare= 0.579031 (intercept) +0.041666 × difflog
+
+This equation can use to predict the voteshare based on the difflog: 0.579031 is the intercept which represents : the estimated value of voteshare when difflog is zero; 0.041666 represents:  on average, for each one-unit increase in the difflog variable, the  predicted value of voteshare is expected to increase by 0.041666
+
+  
+	\end{enumerate}
+	
+\newpage
+
+\section*{Question 2}
+\noindent We are interested in knowing how the difference between incumbent and challenger's spending and the vote share of the presidential candidate of the incumbent's party are related.	\vspace{.25cm}
+	\begin{enumerate}
+		\item Run a regression where the outcome variable is \texttt{presvote} and the explanatory variable is \texttt{difflog}.	
+  
+  \noindent let's use the lm() function in R  to run a simple linear regression. In question 2: the dependent variable (outcome) is presvote: the vote share of the presidential candidate of the incumbent’s party; and the independent variable (explanatory) is difflog: the difference between incumbent and challenger’s spending.  Then, use the summary() function to see the regression results. The code  and result showed as below:  
+
+  \begin{lstlisting}[language=R] 
+model2 <- lm(presvote ~ difflog, data = inc.sub)
+summary(model2)
+ \end{lstlisting} 
+\verbatiminput{regression2_summary.txt}
+
+\noindent In summary: The coefficient for difflog is 0.023837 and it is positive, There is a positive relationship between difflog and voteshare. As difflog increases, voteshare is expected to increase. The p-value associated with the F-statistic: 2.2 $\times 10^{-16}$,  
+which is close to zero, so the linear regression model is statistically significant. The difference between incumbent and challenger’s spending and the vote share of the presidential candidate of the incumbent’s party are positively related. 
+\newpage
+		\item Make a scatterplot of the two variables and add the regression line. 	\vspace{2cm}
+
+  Create a scatter plot with a regression line using the plot() first:  with difflog on the x-axis and presvote on the y-axis.  and  then add  blue color line by : abline() functions , code in R and plot shows below:
+
+ \includegraphics[width=8cm]{scatter plot 2.jpeg} 
+The scatter plot2  of presvote vs. difflog shows a positive linear relationship between the two variables. As difflog increases, presvote tends to increase, there is a tight cluster of points around the regression line when difflog is postive. 
+
+\begin{lstlisting}[language=R] 
+plot(inc.sub$difflog, inc.sub$presvot, main = "Scatter Plot 2  with Regression Line", 
+     xlab = "difflog", ylab = "presvot")
+abline(lm(presvote ~ difflog, data = inc.sub), col = "blue")
+
+\end{lstlisting} 
+  
+		\item Save the residuals of the model in a separate object.	\vspace{1cm}
+\begin{lstlisting}[language=R] 
+residuals2 <- residuals(model2)
+\end{lstlisting} 
+Save residuals from regression model to a vector in R
+  
+		\item Write the prediction equation.
+
+presvote = 0.507583 + 0.023837 × difflog
+
+This equation can use to predict the presvote based on the difflog: 0.507583 is the intercept which represents : the estimated value of presvote when difflog is zero; 0.041666 represents:  on average, for each one-unit increase in the difflog variable, the  predicted value of presvote is expected to increase by 0.023837. In general,  an increase in the difference in campaign spending between incumbents will result in an increase of the vote share of the presidential candidate of the incumbent’s party.
+
+	\end{enumerate}
+	
+	\newpage	
+\section*{Question 3}
+
+\noindent We are interested in knowing how the vote share of the presidential candidate of the incumbent's party is associated with the incumbent's electoral success.
+	\vspace{.25cm}
+	\begin{enumerate}
+		\item Run a regression where the outcome variable is \texttt{voteshare} and the explanatory variable is \texttt{presvote}.
+			\vspace{1cm}
+\noindent let's use the lm() function in R  to run a simple linear 
+           regression. In question 3: the dependent variable (outcome) is voteshare: the incumbent’s vote share; and the independent variable (explanatory) is presvote: vote share of the presidential candidate of the incumbent’s party. Then, use the summary() function to see the regression results. The code  and result showed as below:  
+
+  \begin{lstlisting}[language=R] 
+model3 <- lm(voteshare ~ presvote, data = inc.sub)
+summary(model3)
+ \end{lstlisting} 
+\verbatiminput{regression3_summary.txt}
+
+\noindent In summary: The coefficient for presvote is 0.388018 and it is positive, There is a positive relationship between presvote and voteshare. As presvote increases, voteshare is expected to increase. The p-value associated with the F-statistic: 2.2 $\times 10^{-16}$,  
+which is close to zero, so the linear regression model is statistically significant. The vote share of the presidential candidate of the incumbent’s party and the incumbent’s vote share are positively related. 
+\newpage
+   
+		\item Make a scatterplot of the two variables and add the regression line. 
+
+\vspace{2cm}
+
+  Create a scatter plot with a regression line using the plot() first:  with presvote on the x-axis and voteshare on the y-axis.  and  then add  yellow color line by : abline() functions , code in R and plot shows below:
+
+ \includegraphics[width=8cm]{scatter plot3.jpeg} 
+ 
+The scatter plot3  of voteshare vs. presvote shows a positive linear relationship between the two variables. As presvote increases, voteshare tends to increase, there is a tight cluster of points around the regression line.
+
+\begin{lstlisting}[language=R] 
+plot(inc.sub$presvote, inc.sub$voteshare, main = "Scatter Plot 3  with Regression Line", 
+     xlab = "presvote", ylab = "voteshare")
+abline(lm(voteshare ~ presvote, data = inc.sub), col = "yellow")
+
+\end{lstlisting} 
+  
+     \item Write the prediction equation.
+     
+voteshare =  0.441330  +   0.388018 × presvote
+
+
+This equation can use to predict the voteshare based on the presvote: 0.441330 is the intercept which represents : the estimated value of voteshare when presvote is zero; 0.388018 represents:  on average, for each one-unit increase in the presvote variable, the  predicted value of voteshare is expected to increase by 0.388018. In general,  an increase in the vote share of the presidential candidate of the incumbent’s party will result in an increase of the incumbent’s vote share.
+	\end{enumerate}
+
+
+
+\newpage	
+\section*{Question 4}
+\noindent The residuals from part (a) tell us how much of the variation in \texttt{voteshare} is $not$ explained by the difference in spending between incumbent and challenger. The residuals in part (b) tell us how much of the variation in \texttt{presvote} is $not$ explained by the difference in spending between incumbent and challenger in the district.
+	\begin{enumerate}
+		\item Run a regression where the outcome variable is the residuals from Question 1 and the explanatory variable is the residuals from Question 2.	\vspace{1cm}
+\noindent let's use the lm() function in R  to run a simple linear 
+           regression. In question 4: the dependent variable (outcome) is residual1 from question 1 and the independent variable (explanatory) is residual2 from question2. Then, use the summary() function to see the regression results. The code and result showed as below:  
+
+  \begin{lstlisting}[language=R] 
+model4 <- lm(residuals1 ~ residuals2)
+summary(model4)
+ \end{lstlisting} 
+\verbatiminput{regression4_summary.txt}
+\noindent In summary: The coefficient for residuals2 is 2.569e-01 and it is positive, There is a positive relationship between residuals1  and residuals2. As residuals2 increases, residuals1 is expected to increase. The p-value associated with the F-statistic: 2.2 $\times 10^{-16}$,  
+which is close to zero, so the linear regression model is statistically significant. 
+  
+		\item Make a scatterplot of the two residuals and add the regression line. 	
+
+  \vspace{2cm}
+
+  Create a scatter plot with a regression line using the plot() first:  with residuals2  on the x-axis and residuals1 on the y-axis.  and  then add a red color line by : abline() functions , code in R and plot shows below:
+
+ \includegraphics[width=8cm]{scatter plot 4.jpeg} 
+ 
+The scatter plot4  of residuals1 vs. residuals2 shows a positive linear relationship between the two variables. As residuals1 ( the variation in voteshare)  increases, residuals2 ( variation in presvote) tends to increase, there is a tight cluster of points around the middle of regression line.
+
+\begin{lstlisting}[language=R] 
+plot(residuals2, residuals1, main = "Scatter Plot 4  with Regression Line", 
+     xlab = "residuals2", ylab = "residuals1")
+
+abline(lm(residuals1 ~ residuals2), col = "red")
+\end{lstlisting} 
+  
+  
+		\item Write the prediction equation.
+
+  residuals1 = -4.860e-18 ( e-18:$\times 10^{-18}$ ) + 2.569e-01 × residuals2
+
+  This equation can be used to predict the residuals1 in this question1  based on the residuals2 in question2:  -4.860 $\times 10^{-18}$ is the intercept which represents : the estimated value of residuals1 when residuals2  is zero;  2.569e-01 represents:  on average, for each one-unit increase in the residuals2 variable, the  predicted value of residuals1  is expected to increase by 2.569e-01. In general,  an increase in the residuals2  ( variation in presvote)  will result in an increase of the residuals1  ( the variation in voteshare) 	
+  \end{enumerate}
+	
+	\newpage	
+
+\section*{Question 5}
+\noindent What if the incumbent's vote share is affected by both the president's popularity and the difference in spending between incumbent and challenger? 
+	\begin{enumerate}
+		\item Run a regression where the outcome variable is the incumbent's \texttt{voteshare} and the explanatory variables are \texttt{difflog} and \texttt{presvote}.	\vspace{1cm}
+\noindent let's use lm(outcome variables ~ explanatory variable1 + explanatory 
+        variable2, data = xx ) function in R  to run a multi variable linear 
+           regression. In question 5: the dependent variable (outcome) is  voteshare, and two independent variable (explanatory) are difflog and presvote. Then, use the summary() function to see the regression results. The code and result showed as below:  
+ \begin{lstlisting}[language=R] 
+model5 <- lm(voteshare ~ difflog + presvote, data = inc.sub)
+summary(model5 )
+ \end{lstlisting} 
+\verbatiminput{regression5_summary.txt}
+\noindent In summary: The coefficient for difflog is 0. 0355431; The coefficient for presvote is 0.2568770. there are both positive, There is a positive relationship between voteshare  and both the president’s popularity and the difference in spending between incumbent and challenge.  As voteshare increases,  one of or both of the president’s popularity and the difference in spending between incumbent and challenge is expected to increase. The p-value associated with the F-statistic: 2.2 $\times 10^{-16}$,  
+which is close to zero, so the linear regression model is statistically significant.
+           
+		\item Write the prediction equation.	\vspace{1cm}
+  
+                  voteshare = 0.4486442+ 0.0355431× difflog + 0.2568770 × presvote
+                  
+This equation can be used to predict the voteshare  based on difflog and presvote.  0.4486442 is the intercept which represents : the estimated value of residuals1 when difflog and presvote are both zero; The coefficient for difflog is 
+0.0355431 shows on average,  the predictive change is 0.0355431 in voteshare for a one-unit increase in difflog, when holding presvote constant. The coefficient for presvote is 0.2568770 shows on average,  the predictive change is 0.2568770 in voteshare for a one-unit increase in presvote, when holding difflog constant.In summary, an increase in any of explanatory variables will result in an increase in the outcome variable(voteshare).
+
+
+		\item What is it in this output that is identical to the output in Question 4? Why do you think this is the case?
+
+  Comparing the regression output in question 4 and question 5, they both have $p-value < 2.2e-16$ associated with the explanatory variables,  there are really small p-values show strong evidence the true coefficient for explanatory  is not  zero:
+  
+ In question 4: p-value with $residuals2 < 2e-16$
+
+ residuals2 is a statistically significant predictor.
+ 
+   In question  5:  p-value with $difflog < 2e-16$  p-value with  $presvote <2e-16$
+
+difflog and presvote are statistically significant predictors.
+
+   In conclusion: the explanatory variables in question 4 and question 5 are statistically significant predictors in  each of the regression model.
+ 
+	\end{enumerate}
+
+
+
+
+\end{document}
